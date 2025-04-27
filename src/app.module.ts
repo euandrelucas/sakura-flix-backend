@@ -3,6 +3,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AnimeModule } from './anime/anime.module';
 import { ConfigModule } from '@nestjs/config';
+import { ProxyController } from './proxy/proxy.controller';
 
 @Module({
   imports: [
@@ -11,7 +12,7 @@ import { ConfigModule } from '@nestjs/config';
     }),
     AnimeModule,
   ],
-  controllers: [AppController],
+  controllers: [AppController, ProxyController],
   providers: [AppService],
 })
 export class AppModule {}
