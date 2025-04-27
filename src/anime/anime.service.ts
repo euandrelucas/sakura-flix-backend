@@ -7,6 +7,7 @@ import { AxiosResponse } from 'axios';
 @Injectable()
 export class AnimeService {
   private readonly baseUrl: string;
+  private readonly proxyUrl: string;
 
   constructor(
     private readonly httpService: HttpService,
@@ -14,6 +15,13 @@ export class AnimeService {
   ) {
     this.baseUrl =
       this.configService.get<string>('BASE_URL') || 'http://localhost:3000';
+    this.proxyUrl =
+      this.configService.get<string>('PROXY_URL') ||
+      'http://localhost:3000/proxy';
+  }
+
+  private proxify(url: string): string {
+    return `${this.proxyUrl}?url=${encodeURIComponent(url)}`;
   }
 
   searchAnime(query: string, page = 1): Observable<AxiosResponse<any>> {
