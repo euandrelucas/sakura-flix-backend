@@ -2,7 +2,7 @@
 import { Injectable } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
-import { Observable, map } from 'rxjs';
+import { map, Observable } from 'rxjs';
 import { AxiosResponse } from 'axios';
 
 @Injectable()
@@ -38,35 +38,33 @@ export class AnimeService {
   getEpisodeStream(
     episodeId: string,
     serverName = 'vidstreaming',
-  ): Observable<AxiosResponse<any>> {
+  ): Observable<any> {
     const url = `${this.baseUrl}/anime/zoro/watch/${encodeURIComponent(episodeId)}?server=${serverName}`;
-    return this.httpService.get(url);
-  }
-
-  getRecentEpisodes(page = 1): Observable<AxiosResponse<any>> {
-    const url = `${this.baseUrl}/anime/zoro/recent-episodes?page=${page}`;
     return this.httpService.get(url).pipe(
       map((response) => {
         const data = response.data;
-
-        // Proxificar todas as URLs dos sources
+  
         if (Array.isArray(data.sources)) {
           data.sources = data.sources.map((source: { url: string }) => ({
             ...source,
             url: this.proxify(source.url),
           }));
         }
-
-        // Proxificar também as legendas se quiser
+  
         if (Array.isArray(data.subtitles)) {
-          data.subtitles = data.subtitles.map((subtitle) => ({
+          data.subtitles = data.subtitles.map((subtitle: { url: string }) => ({
             ...subtitle,
             url: this.proxify(subtitle.url),
           }));
         }
-
+  
         return data;
       }),
     );
+  }  
+
+  getRecentEpisodes(page = 1): Observable<AxiosResponse<any>> {
+    const url = `${this.baseUrl}/anime/zoro/recent-episodes?page=${page}`;
+    return this.httpService.get(url);
   }
 }

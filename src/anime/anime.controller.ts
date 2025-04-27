@@ -1,9 +1,11 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-return */
 import { Controller, Get, Query } from '@nestjs/common';
 import { AnimeService } from './anime.service';
 import { ApiTags, ApiOperation, ApiQuery, ApiResponse } from '@nestjs/swagger';
 import { map } from 'rxjs/operators';
+import { firstValueFrom } from 'rxjs';
 
 @ApiTags('Anime') // Agrupa no Swagger
 @Controller('anime')
@@ -52,13 +54,14 @@ export class AnimeController {
     description: 'Servidor de streaming (ex: vidstreaming)',
   })
   @ApiResponse({ status: 200, description: 'Link do vídeo do episódio' })
-  watch(
+  async watch(
     @Query('episodeId') episodeId: string,
     @Query('server') server = 'vidstreaming',
   ) {
-    return this.animeService
-      .getEpisodeStream(episodeId, server)
-      .pipe(map((response) => response.data));
+    const data = await firstValueFrom(
+      this.animeService.getEpisodeStream(episodeId, server),
+    );
+    return data;
   }
 
   @Get('recent')
