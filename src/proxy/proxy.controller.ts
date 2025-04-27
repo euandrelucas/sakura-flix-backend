@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import { Controller, Query, Res, Req, All } from '@nestjs/common';
@@ -17,11 +18,12 @@ export class ProxyController {
   ) {
     // Se for uma preflight OPTIONS request
     if (req.method === 'OPTIONS') {
-      res.header('Access-Control-Allow-Origin', '*');
-      res.header('Access-Control-Allow-Methods', 'GET,OPTIONS');
-      res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-      res.statusCode = 204;
-      res.send();
+      res.raw.writeHead(204, {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'GET,OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+      });
+      res.raw.end();
       return;
     }
 
@@ -38,17 +40,16 @@ export class ProxyController {
         }),
       );
 
-      // Headers CORS
-      res.header('Access-Control-Allow-Origin', '*');
-      res.header('Access-Control-Allow-Methods', 'GET,OPTIONS');
-      res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+      // Setar manualmente os headers no res.raw
+      res.raw.writeHead(200, {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'GET,OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+        'Content-Type':
+          response.headers['content-type'] || 'application/octet-stream',
+      });
 
-      // Content-Type vindo da resposta original
-      res.header(
-        'Content-Type',
-        response.headers['content-type'] || 'application/octet-stream',
-      );
-
+      // Fazer pipe corretamente
       response.data.pipe(res.raw);
     } catch (error) {
       console.error('Proxy error:', error.message);
