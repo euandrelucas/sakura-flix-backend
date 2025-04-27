@@ -1,0 +1,9 @@
+services:
+  sakuraflix-backend:
+    build: .
+    container_name: sakuraflix-backend
+    restart: always
+    ports:
+      - "45678:3000"
+    environment:
+      - NODE_ENV=production
