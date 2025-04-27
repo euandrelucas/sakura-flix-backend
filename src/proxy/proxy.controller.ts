@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import { Controller, Get, Query, Res } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { FastifyReply } from 'fastify';
@@ -10,11 +12,12 @@ export class ProxyController {
   @Get()
   async proxy(
     @Query('url') url: string,
-    @Res({ passthrough: true }) res: FastifyReply,
+    @Res({ passthrough: false }) res: FastifyReply,
   ) {
     if (!url) {
       res.statusCode = 400;
-      return { message: 'Missing url parameter' };
+      res.send('Missing url');
+      return;
     }
 
     try {
@@ -26,15 +29,14 @@ export class ProxyController {
 
       res.header('Access-Control-Allow-Origin', '*');
       res.header('Content-Type', response.headers['content-type']);
-      (response.data as NodeJS.ReadableStream).pipe(res.raw);
 
-      return;
-    } catch (error: unknown) {
-      const errorMessage =
-        error instanceof Error ? error.message : 'Unknown error';
-      console.error('Proxy Error:', errorMessage);
+      response.data.pipe(res.raw); // aqui você está assumindo o controle total
+
+      // NÃO retorna mais nada aqui!
+    } catch (error) {
+      console.error('Proxy error:', error.message);
       res.statusCode = 500;
-      return { message: 'Failed to fetch resource' };
+      res.send('Error proxying request');
     }
   }
 }
