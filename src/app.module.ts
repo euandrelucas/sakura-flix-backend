@@ -4,6 +4,7 @@ import { AppService } from './app.service';
 import { AnimeModule } from './anime/anime.module';
 import { ConfigModule } from '@nestjs/config';
 import { ProxyController } from './proxy/proxy.controller';
+import { ProxyModule } from './proxy/proxy.module';
 
 @Module({
   imports: [
@@ -11,6 +12,7 @@ import { ProxyController } from './proxy/proxy.controller';
       isGlobal: true,
     }),
     AnimeModule,
+    ProxyModule,
   ],
   controllers: [AppController, ProxyController],
   providers: [AppService],
