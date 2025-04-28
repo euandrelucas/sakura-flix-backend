@@ -1,9 +1,25 @@
 services:
+  sakuraflix-db:
+    image: postgres:16
+    container_name: sakuraflix-db
+    restart: always
+    env_file:
+      - docker-compose.env
+    ports:
+      - '54231:5432'
+    volumes:
+      - sakuraflix_data:/var/lib/postgresql/data
+
   sakuraflix-backend:
     build: .
     container_name: sakuraflix-backend
     restart: always
     ports:
-      - "45678:3000"
+      - '45678:3000'
     env_file:
       - .env
+    depends_on:
+      - sakuraflix-db
+
+volumes:
+  sakuraflix_data:

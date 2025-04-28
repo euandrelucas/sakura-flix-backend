@@ -23,6 +23,14 @@ async function bootstrap() {
     .setDescription('API para streaming de animes do SakuraFlix 🌸')
     .setVersion('1.0')
     .addTag('anime')
+    .addApiKey(
+      {
+        type: 'apiKey',
+        name: 'x-api-key',
+        in: 'header',
+      },
+      'x-api-key',
+    )
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('docs', app, document);

@@ -43,25 +43,25 @@ export class AnimeService {
     return this.httpService.get(url).pipe(
       map((response) => {
         const data = response.data;
-  
+
         if (Array.isArray(data.sources)) {
           data.sources = data.sources.map((source: { url: string }) => ({
             ...source,
             url: this.proxify(source.url),
           }));
         }
-  
+
         if (Array.isArray(data.subtitles)) {
           data.subtitles = data.subtitles.map((subtitle: { url: string }) => ({
             ...subtitle,
             url: this.proxify(subtitle.url),
           }));
         }
-  
+
         return data;
       }),
     );
-  }  
+  }
 
   getRecentEpisodes(page = 1): Observable<AxiosResponse<any>> {
     const url = `${this.baseUrl}/anime/zoro/recent-episodes?page=${page}`;

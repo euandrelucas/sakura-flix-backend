@@ -13,6 +13,9 @@ RUN yarn install --frozen-lockfile
 # Copiar todo o restante da aplicação
 COPY . .
 
+# Aplicar migrações do banco de dados (caso esteja usando TypeORM ou similar)
+RUN yarn prisma migrate deploy
+
 # Compilar a aplicação (caso esteja usando TypeScript)
 RUN yarn build
 
