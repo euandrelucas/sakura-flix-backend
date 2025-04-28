@@ -9,6 +9,10 @@ done
 
 echo "✅ Banco de dados está pronto!"
 
+# Gerar o prisma client
+echo "🛠️ Gerando Prisma Client..."
+yarn prisma generate
+
 # Rodar as migrations
 echo "🚀 Rodando migrations..."
 yarn prisma migrate deploy
